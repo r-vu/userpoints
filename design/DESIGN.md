@@ -43,3 +43,23 @@ A subsequent query to the points balance route, after the deduction, should retu
 * DANNON, 1000 points
 * UNILEVER, 0 points
 * MILLER COORS, 5,300 points
+
+## Use Cases
+
+* A user account should be creatable, as the requirements state *"return point balance per user"*
+* Payer must be able to make transactions to a specific user account
+  * **Unknown:** Should payers be anonymous objects?
+  * Transactions must be individual based on date and time
+  * Amounts in transactions can be nonpositive
+  * Transactions should keep track of date and time
+* A user can deduct points from a specific user account
+  * Only the amount deducted is required
+  * Transaction history to achieve deduction must be displayed
+  * The oldest points have highest priority in deduction
+* An accountant can view the balance of an account, and the breakdown. A user can only see the total balance
+  * **Unknown:** Should this list be in a certain order?
+  * **Unknown:** How should we differeniate users and accountants? What authorization logic should be used?
+
+## Entity Relationships
+
+![entity_relationship_diagram.svg](./entity_relationship_diagram.svg)

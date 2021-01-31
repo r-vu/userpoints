@@ -41,6 +41,10 @@ public class User {
     }
 
     public void addPoints(String payer, int points) {
+        if (points <= 0) {
+            return;
+        }
+
         Transaction t = new Transaction(payer, this, points);
         addTransaction(t);
     }
@@ -71,10 +75,10 @@ public class User {
                     current.getPayer(), this, -1 * current.getCurrentPoints(), timestamp);
                 addTransaction(next);
                 transactionDeque.removeFirst();
-                points -= current.getCurrentPoints();
+                points += next.getInitialPoints();
             } else {
                 next = new Transaction(
-                    current.getPayer(), this, -1 * (current.getCurrentPoints() - points), timestamp);
+                    current.getPayer(), this, -1 * points, timestamp);
                 addTransaction(next);
                 points = 0;
             }

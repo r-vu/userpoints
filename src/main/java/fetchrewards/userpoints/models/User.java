@@ -14,7 +14,7 @@ public class User {
 
     public User() {
         this.userId = NEXT_ID++;
-        this.pointBreakdown = new HashMap<>();
+        this.pointBreakdown = new LinkedHashMap<>();
         this.balance = 0;
 
         // Used to track all transactions in history
@@ -98,9 +98,10 @@ public class User {
         if (t.getInitialPoints() > 0) {
             transactionDeque.addLast(t);
         } else if (t.getInitialPoints() < 0) {
+            int remainder = -1 * t.getInitialPoints();
             for (Transaction transaction : transactionDeque) {
                 if (t.equalPayers(transaction)) {
-                    int remainder = transaction.deductPoints(-1 * t.getInitialPoints());
+                    remainder = transaction.deductPoints(remainder);
                     if (remainder == 0) {
                         break;
                     }

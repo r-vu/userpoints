@@ -184,7 +184,7 @@ public class UserTest {
 
         String breakdownString = user1.stringifyBreakdown();
         assertEquals(
-            "PAYER1, 0 points\nPAYER2, 50 points\nPAYER3, 300 points\n",
+            "PAYER1, 0 points\nPAYER2, 150 points\nPAYER3, 300 points\n",
             breakdownString);
     }
 

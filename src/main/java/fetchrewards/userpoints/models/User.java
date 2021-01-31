@@ -1,6 +1,6 @@
 package fetchrewards.userpoints.models;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.*;
 
 public class User {
@@ -28,8 +28,8 @@ public class User {
         return this.userId;
     }
 
-    public String getPointBreakdown() {
-        return null;
+    public Map<String, Integer> getPointBreakdown() {
+        return this.pointBreakdown;
     }
 
     public int getBalance() {
@@ -60,7 +60,7 @@ public class User {
         }
 
 
-        LocalDateTime timestamp = LocalDateTime.now(Transaction.UTC_TIMEZONE);
+        ZonedDateTime timestamp = ZonedDateTime.now(Transaction.UTC_TIMEZONE);
 
         while (points > 0 && !transactionDeque.isEmpty()) {
             Transaction current = transactionDeque.peekFirst();
@@ -86,6 +86,10 @@ public class User {
         return deductionHistory;
     }
 
+    /**
+     * This helper function has logic for payer refunds, which can be used in the
+     * future if required
+     */
     private void addTransaction(Transaction t) {
         if (t.getInitialPoints() > 0) {
             transactionDeque.addLast(t);
@@ -103,5 +107,45 @@ public class User {
         balance += t.getInitialPoints();
         pointBreakdown.put(t.getPayer(), pointBreakdown.getOrDefault(t.getPayer(), 0) + t.getInitialPoints());
         transactionList.add(t);
+    }
+
+    public String stringifyBreakdown() {
+        StringBuilder output = new StringBuilder();
+        for (String key : pointBreakdown.keySet()) {
+            output.append(key);
+            output.append(", ");
+            output.append(pointBreakdown.get(key));
+            output.append(" points\n");
+        }
+
+        return output.toString();
+    }
+
+    /**
+     *
+     * @return The User's transaction history, as a String
+     */
+    public String stringifyTransactions() {
+        return stringifyTransactions(transactionList);
+    }
+
+    /**
+     * Static method in case the transaction list for a
+     * deduction needs to be turned into a String, which is not
+     * carried as a property of a User instance
+     */
+    public static String stringifyTransactions(List<Transaction> transactionList) {
+        StringBuilder output = new StringBuilder();
+        for (Transaction t : transactionList) {
+            output.append("[");
+            output.append(t.getPayer());
+            output.append(", ");
+            output.append(t.getInitialPoints());
+            output.append(" points, ");
+            output.append(t.stringifyTransactionDate());
+            output.append("]\n");
+        }
+
+        return output.toString();
     }
 }

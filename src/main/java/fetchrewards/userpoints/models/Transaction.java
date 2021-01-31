@@ -1,24 +1,29 @@
 package fetchrewards.userpoints.models;
 
 
-import java.time.*;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Transaction {
     public static final ZoneId UTC_TIMEZONE = ZoneOffset.UTC;
     private static long NEXT_ID = 1;
+    private static final DateTimeFormatter FORMATTER =
+        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss O");
 
     private final long transactionId;
     private final String payer;
     private final User recipient;
     private final int initialPoints;
     private int currentPoints;
-    private final LocalDateTime transactionDate;
+    private final ZonedDateTime transactionDate;
 
     public Transaction(String payer, User recipient, int points) {
-        this(payer, recipient, points, LocalDateTime.now(UTC_TIMEZONE));
+        this(payer, recipient, points, ZonedDateTime.now(UTC_TIMEZONE));
     }
 
-    public Transaction(String payer, User recipient, int points, LocalDateTime time) {
+    public Transaction(String payer, User recipient, int points, ZonedDateTime time) {
         this.transactionId = NEXT_ID++;
         this.payer = payer;
         this.recipient = recipient;
@@ -41,6 +46,14 @@ public class Transaction {
 
     public int getCurrentPoints() {
         return this.currentPoints;
+    }
+
+    public ZonedDateTime getTransactionDate() {
+        return this.transactionDate;
+    }
+
+    public String stringifyTransactionDate() {
+        return transactionDate.format(FORMATTER);
     }
 
     public boolean equalPayers(Transaction t) {

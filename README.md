@@ -50,7 +50,7 @@ The application should now be up and running! If the application needs to be ter
 
 # Usage
 
-*For quick reference, please take a look at the specific API documentation. Otherwise, follow below for detailed examples and results.*
+*For quick reference, please take a look at the [specfic API documentation](./API_USAGE.md "API_USAGE.md"). Otherwise, follow below for detailed examples and results.*
 
 With the application started, we can now add or remove points as we please to specific user accounts. We can start by looking at the list of open accounts:
 

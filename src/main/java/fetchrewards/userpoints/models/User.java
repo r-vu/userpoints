@@ -1,15 +1,24 @@
 package fetchrewards.userpoints.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.hateoas.RepresentationModel;
+
 import java.time.ZonedDateTime;
 import java.util.*;
 
-public class User {
+public class User extends RepresentationModel<User> {
 
     private static long NEXT_ID = 1;
     private final long userId;
-    private Map<String, Integer> pointBreakdown;
     private int balance;
+
+    @JsonIgnore
+    private final Map<String, Integer> pointBreakdown;
+
+    @JsonIgnore
     private final List<Transaction> transactionList;
+
+    @JsonIgnore
     private final Deque<Transaction> transactionDeque;
 
     public User() {
@@ -28,6 +37,7 @@ public class User {
         return this.userId;
     }
 
+    @JsonIgnore
     public Map<String, Integer> getPointBreakdown() {
         return this.pointBreakdown;
     }
@@ -36,6 +46,7 @@ public class User {
         return this.balance;
     }
 
+    @JsonIgnore
     public List<Transaction> getTransactions() {
         return this.transactionList;
     }

@@ -3,12 +3,13 @@ package fetchrewards.userpoints.controllers;
 import fetchrewards.userpoints.models.User;
 import fetchrewards.userpoints.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -19,35 +20,34 @@ public class UserController {
     private UserService userService;
 
     @GetMapping(path = "")
-    public HttpEntity<List<User>> usersSummary() {
-        return new ResponseEntity<>(HttpStatus.OK);
+    public HttpEntity<CollectionModel<User>> getAllUsers() {
+        return userService.findAll();
     }
 
     @GetMapping(path = "/{id}")
-    public HttpEntity<User> getUser(@PathVariable long id) {
-        return new ResponseEntity<>(userService.findUserById(id), HttpStatus.OK);
+    public HttpEntity<EntityModel<User>> getUser(@PathVariable long id) {
+        return userService.findUserById(id);
     }
 
-    @PostMapping(path = "/")
-    public HttpEntity<User> createUser() {
-        return new ResponseEntity<>(userService.createUser(), HttpStatus.CREATED);
+    @PostMapping(path = "")
+    public HttpEntity<EntityModel<User>> createUser() {
+        return userService.createUser();
     }
 
     @PostMapping(path = "/{id}/addpoints")
-    @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    public void addPointsToUser(
-        @PathVariable long id,
+    public HttpEntity<EntityModel<User>> addPointsToUser(
+        @PathVariable Long id,
         @RequestParam String payer,
-        @RequestParam int points
+        @RequestParam Integer points
     ) {
-        userService.addPointsToUser(id, payer, points);
+        return userService.addPointsToUser(id, payer, points);
     }
 
     @PostMapping(path = "/{id}/deductpoints")
     public HttpEntity<Map<String, Integer>> deductPointsFromUser(
-        @PathVariable long id,
-        @RequestParam int points
+        @PathVariable Long id,
+        @RequestParam Integer points
     ) {
-        return new ResponseEntity<>(userService.deductPointsFromUser(id, points), HttpStatus.CREATED);
+        return new ResponseEntity<>(userService.deductPointsFromUser(id, points), HttpStatus.OK);
     }
 }

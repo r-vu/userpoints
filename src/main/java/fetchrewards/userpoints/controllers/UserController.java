@@ -48,6 +48,11 @@ public class UserController {
         @PathVariable Long id,
         @RequestParam Integer points
     ) {
-        return new ResponseEntity<>(userService.deductPointsFromUser(id, points), HttpStatus.OK);
+        return userService.deductPointsFromUser(id, points);
+    }
+
+    @GetMapping(path = "/{id}/pointbreakdown")
+    public HttpEntity<Map<String, Integer>> getPointBreakdown(@PathVariable Long id) {
+        return userService.pointBreakdown(id);
     }
 }

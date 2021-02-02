@@ -60,14 +60,20 @@ public class UserService {
     }
 
     public HttpEntity<EntityModel<User>> addPointsToUser(long id, String payer, int points) {
+
         User current = userMap.get(id);
         current.addPoints(payer, points);
         return new ResponseEntity<>(EntityModel.of(current), HttpStatus.OK);
     }
 
-    public Map<String, Integer> deductPointsFromUser(long id, int points) {
+    public HttpEntity<Map<String, Integer>> deductPointsFromUser(long id, int points) {
         User current = userMap.get(id);
-        return current.deductPoints(points);
+        return new ResponseEntity<>(current.deductPoints(points), HttpStatus.OK);
+    }
+
+    public HttpEntity<Map<String, Integer>> pointBreakdown(long id) {
+        User current = userMap.get(id);
+        return new ResponseEntity<>(current.getPointBreakdown(), HttpStatus.OK);
     }
 
     private static EntityModel<User> addLinks(User user) {

@@ -20,7 +20,7 @@ public class UserController {
     private UserService userService;
 
     @GetMapping(path = "")
-    public HttpEntity<CollectionModel<User>> getAllUsers() {
+    public HttpEntity<CollectionModel<EntityModel<User>>> getAllUsers() {
         return userService.findAll();
     }
 

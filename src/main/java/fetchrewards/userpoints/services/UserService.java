@@ -13,7 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -26,7 +28,7 @@ public class UserService {
     // However for this challenge, only need to keep in program memory
     private static final Map<Long, User> userMap = new HashMap<>();
 
-    public HttpEntity<CollectionModel<User>> findAll() {
+    public HttpEntity<CollectionModel<EntityModel<User>>> findAll() {
         Link self = linkTo(methodOn(UserController.class)
             .getAllUsers())
             .withSelfRel();
@@ -35,7 +37,12 @@ public class UserService {
             .createUser())
             .withRel("createUser");
 
-        CollectionModel<User> collectionModel = CollectionModel.of(userMap.values());
+        List<EntityModel<User>> entityModelList = new ArrayList<>(userMap.size());
+        for (User user : userMap.values()) {
+            entityModelList.add(addSelfLink(user, null));
+        }
+
+        CollectionModel<EntityModel<User>> collectionModel = CollectionModel.of(entityModelList);
         collectionModel.add(self);
         collectionModel.add(createUser);
         return new ResponseEntity<>(collectionModel, HttpStatus.OK);
@@ -46,7 +53,9 @@ public class UserService {
             throw new UserNotFoundException();
         }
 
-        return new ResponseEntity<>(addLinks(userMap.get(id)), HttpStatus.OK);
+        User current = userMap.get(id);
+        EntityModel<User> entityModel = addAllLinks(current, null);
+        return new ResponseEntity<>(entityModel, HttpStatus.OK);
     }
 
     public HttpEntity<EntityModel<User>> createUser() {
@@ -60,7 +69,6 @@ public class UserService {
     }
 
     public HttpEntity<EntityModel<User>> addPointsToUser(long id, String payer, int points) {
-
         User current = userMap.get(id);
         current.addPoints(payer, points);
         return new ResponseEntity<>(EntityModel.of(current), HttpStatus.OK);
@@ -76,10 +84,25 @@ public class UserService {
         return new ResponseEntity<>(current.getPointBreakdown(), HttpStatus.OK);
     }
 
-    private static EntityModel<User> addLinks(User user) {
+    private static EntityModel<User> addSelfLink(User user, EntityModel<User> entityModel) {
+        if (entityModel == null) {
+            entityModel = EntityModel.of(user);
+        }
+
         Link self = linkTo(methodOn(UserController.class)
             .getUser(user.getUserId()))
             .withSelfRel();
+
+        entityModel.add(self);
+        return entityModel;
+    }
+
+    private static EntityModel<User> addAllLinks(User user, EntityModel<User> entityModel) {
+        if (entityModel == null) {
+            entityModel = EntityModel.of(user);
+        }
+
+        addSelfLink(user, entityModel);
 
         Link addPoints = linkTo(methodOn(UserController.class)
             .addPointsToUser(user.getUserId(), null, null))
@@ -89,15 +112,20 @@ public class UserService {
             .deductPointsFromUser(user.getUserId(), null))
             .withRel("deductPoints");
 
+        Link pointBreakdown = linkTo(methodOn(UserController.class)
+            .getPointBreakdown(user.getUserId()))
+            .withRel("pointBreakdown");
+
         Link userList = linkTo(methodOn(UserController.class)
             .getAllUsers())
             .withRel("userList");
 
-        user.add(self);
-        user.add(addPoints);
-        user.add(deductPoints);
-        user.add(userList);
-        return EntityModel.of(user);
+        entityModel.add(addPoints);
+        entityModel.add(deductPoints);
+        entityModel.add(pointBreakdown);
+        entityModel.add(userList);
+        return entityModel;
+//        return EntityModel.of(user);
     }
 
 
